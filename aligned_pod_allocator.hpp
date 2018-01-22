@@ -75,7 +75,7 @@ namespace sys {
                     return (base_t*)ret;
             }
             
-            template <class base_t,const uint64_t alignment>
+            template <class base_t,const ptrdiff_t alignment>
             static void heap_delete(void* ent) {
                     const ptrdiff_t hdr_sz = (alignment  >= sizeof(void*)) ? alignment : ( alignment  + sizeof(void*)  ) & ( ~(alignment-1)) ;
                     ptrdiff_t addr;
