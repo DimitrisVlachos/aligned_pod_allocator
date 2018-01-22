@@ -54,7 +54,7 @@ namespace sys {
                     void* aligned;
                     ptrdiff_t addr,saddr;
 
-                    ent = (void*) new base_t[msize];
+                    ent = (void*) new uint8_t[msize];
                     if (nullptr == ent) {
                         return nullptr;
                     }
