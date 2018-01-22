@@ -49,7 +49,7 @@ namespace sys {
             template <class base_t,const ptrdiff_t alignment>
             static inline base_t* heap_new(const ptrdiff_t size) {
                     const ptrdiff_t hdr_sz = alignment  ;
-                    const ptrdiff_t msize = (hdr_sz + alignment + size) & (~ (alignment-1));
+                    const ptrdiff_t msize = (hdr_sz + alignment + (size*sizeof(base_t) )) & (~ (alignment-1));
                     void* ent;
                     void* aligned;
                     ptrdiff_t addr,saddr;
