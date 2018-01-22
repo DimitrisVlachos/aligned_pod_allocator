@@ -1,6 +1,6 @@
 /*
  
- Aligned heap POD allocator v1
+ Aligned heap POD allocator 
  
  
 Copyright (c) 2018 Dimitris Vlachos https://github.com/DimitrisVlachos
@@ -24,18 +24,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
-#ifndef __aligned_pod_allocator_hpp__
-#define __aligned_pod_allocator_hpp__
 #include <stdint.h>
- 
-
-
 namespace sys {
     namespace allocators {
         namespace basic_aligned_pod_alloc {
-            #define basic_aligned_alloc_trace(___x___,...) /*printf( ___x___,__VA_ARGS__) */
+            #define basic_aligned_alloc_trace(___x___,...) /* printf( ___x___,__VA_ARGS__)  */
             namespace _internal {
-                static inline void wr_addr(void* dst,const void* src) {
+                static inline void poke(void* dst,const void* src) {
                         uint8_t* w = (uint8_t*)dst;
                         const uint8_t* r = (const uint8_t*)src;
                         const uint8_t* r2 = r + sizeof(void*);
@@ -45,10 +40,10 @@ namespace sys {
                         } while (r < r2);
                 }
             }
-            
+
             template <class base_t,const ptrdiff_t alignment>
             static inline base_t* heap_new(const ptrdiff_t size) {
-                    const ptrdiff_t hdr_sz = alignment  ;
+                    const ptrdiff_t hdr_sz = (alignment  >= sizeof(void*)) ? alignment : ( alignment  + sizeof(void*)  ) & ( ~(alignment-1)) ;
                     const ptrdiff_t msize = (hdr_sz + alignment + (size*sizeof(base_t) )) & (~ (alignment-1));
                     void* ent;
                     void* aligned;
@@ -59,14 +54,15 @@ namespace sys {
                         return nullptr;
                     }
 
-                    basic_aligned_alloc_trace("Requested block size : %llu / alignment = %llu\n ",size,alignment);
+                    basic_aligned_alloc_trace("Requested block size : %llu / alignment = %llu\n ",size*sizeof(base_t),alignment);
+                     basic_aligned_alloc_trace("hdr size : %llu \n ",hdr_sz);
                     basic_aligned_alloc_trace("Total size : %llu \n ",msize);
                     addr = (ptrdiff_t)ent;
                     saddr = addr;
                     basic_aligned_alloc_trace("Saddr diff  aligned :  %s\n ", ( saddr % alignment == 0) ? "yes" : "no" );
                     addr += alignment - (addr % alignment);
                     aligned = (void*)addr;
-                    _internal::wr_addr(aligned,&saddr);
+                    _internal::poke(aligned,&saddr);
 
                     basic_aligned_alloc_trace("Ptr diff  : %llu \n ",(ptrdiff_t)addr - (ptrdiff_t)ent);
                     
@@ -74,18 +70,18 @@ namespace sys {
 
                     basic_aligned_alloc_trace("Base    p %p\n",ent);
                     basic_aligned_alloc_trace("Patched p %p\n",addr);
-                    basic_aligned_alloc_trace("Ptr diff  aligned :  %s\n ", ( (ptrdiff_t)ret % alignment == 0) ? "yes" : "no" );
+                    basic_aligned_alloc_trace("Ptr aligned :  %s\n ", ( (ptrdiff_t)ret % alignment == 0) ? "yes" : "no" );
 
                     return (base_t*)ret;
             }
             
             template <class base_t,const uint64_t alignment>
             static void heap_delete(void* ent) {
-                    const ptrdiff_t hdr_sz = alignment;
+                    const ptrdiff_t hdr_sz = (alignment  >= sizeof(void*)) ? alignment : ( alignment  + sizeof(void*)  ) & ( ~(alignment-1)) ;
                     ptrdiff_t addr;
 
                     if (ent) {
-                            _internal::wr_addr(&addr,(uint8_t*)ent - hdr_sz);
+                            _internal::poke(&addr,(uint8_t*)ent - hdr_sz);
                             basic_aligned_alloc_trace("Delete  p %p\n",addr);
                             delete[] (base_t*)addr;
                     }
@@ -94,4 +90,3 @@ namespace sys {
         }
     }
 }
-#endif
