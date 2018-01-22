@@ -41,7 +41,7 @@ namespace sys {
                 }
             }
 
-            template <class base_t,const ptrdiff_t alignment>
+           template <class base_t,const ptrdiff_t alignment = sizeof(base_t)>
             static inline base_t* heap_new(const ptrdiff_t size) {
                     const ptrdiff_t hdr_sz = (alignment  >= sizeof(void*)) ? alignment : ( alignment  + sizeof(void*)  ) & ( ~(alignment-1)) ;
                     const ptrdiff_t msize = (hdr_sz + alignment + (size*sizeof(base_t) )) & (~ (alignment-1));
@@ -75,7 +75,7 @@ namespace sys {
                     return (base_t*)ret;
             }
             
-            template <class base_t,const ptrdiff_t alignment>
+            template <class base_t,const ptrdiff_t alignment = sizeof(base_t)>
             static inline void heap_delete(void* ent) {
                     const ptrdiff_t hdr_sz = (alignment  >= sizeof(void*)) ? alignment : ( alignment  + sizeof(void*)  ) & ( ~(alignment-1)) ;
                     ptrdiff_t addr;
