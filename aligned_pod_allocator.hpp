@@ -76,7 +76,7 @@ namespace sys {
             }
             
             template <class base_t,const ptrdiff_t alignment>
-            static void heap_delete(void* ent) {
+            static inline void heap_delete(void* ent) {
                     const ptrdiff_t hdr_sz = (alignment  >= sizeof(void*)) ? alignment : ( alignment  + sizeof(void*)  ) & ( ~(alignment-1)) ;
                     ptrdiff_t addr;
 
