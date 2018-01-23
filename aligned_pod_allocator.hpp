@@ -23,7 +23,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-
+#ifndef __aligned_pod_allocator_hpp__
+#define  __aligned_pod_allocator_hpp__
 #include <stdint.h>
 namespace sys {
     namespace allocators {
@@ -90,3 +91,4 @@ namespace sys {
         }
     }
 }
+#endif
