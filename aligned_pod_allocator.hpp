@@ -31,7 +31,7 @@ namespace sys {
         namespace basic_aligned_pod_alloc {
             #define basic_aligned_alloc_trace(___x___,...) /* printf( ___x___,__VA_ARGS__)  */
             namespace _internal {
-                static inline void poke(void* dst,const void* src) {
+                static inline void peek_poke(void* dst,const void* src) {
                         uint8_t* w = (uint8_t*)dst;
                         const uint8_t* r = (const uint8_t*)src;
                         const uint8_t* r2 = r + sizeof(void*);
@@ -42,7 +42,7 @@ namespace sys {
                 }
             }
 
-           template <class base_t,const ptrdiff_t alignment = sizeof(base_t)>
+            template <class base_t,const ptrdiff_t alignment = sizeof(base_t)>
             static inline base_t* heap_new(const ptrdiff_t size) {
                     const ptrdiff_t hdr_sz = (alignment  >= sizeof(void*)) ? alignment : ( alignment  + sizeof(void*)  ) & ( ~(alignment-1)) ;
                     const ptrdiff_t msize = (hdr_sz + alignment + (size*sizeof(base_t) )) & (~ (alignment-1));
@@ -63,7 +63,7 @@ namespace sys {
                     basic_aligned_alloc_trace("Saddr diff  aligned :  %s\n ", ( saddr % alignment == 0) ? "yes" : "no" );
                     addr += alignment - (addr % alignment);
                     aligned = (void*)addr;
-                    _internal::poke(aligned,&saddr);
+                    _internal::peek_poke(aligned,&saddr);
 
                     basic_aligned_alloc_trace("Ptr diff  : %llu \n ",(ptrdiff_t)addr - (ptrdiff_t)ent);
                     
@@ -82,9 +82,9 @@ namespace sys {
                     ptrdiff_t addr;
 
                     if (ent) {
-                            _internal::poke(&addr,(uint8_t*)ent - hdr_sz);
+                            _internal::peek_poke(&addr,(uint8_t*)ent - hdr_sz);
                             basic_aligned_alloc_trace("Delete  p %p\n",addr);
-                            delete[] (base_t*)addr;
+                            delete[] (uint8_t*)addr;
                     }
             }
             #undef basic_aligned_alloc_trace
