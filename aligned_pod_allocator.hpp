@@ -44,7 +44,7 @@ namespace sys {
 
             template <class base_t,const ptrdiff_t alignment = sizeof(base_t)>
             static inline base_t* heap_new(const ptrdiff_t size) {
-                    const ptrdiff_t hdr_sz = (alignment  >= sizeof(void*)) ? alignment : ( alignment  + sizeof(void*)  ) & ( ~(alignment-1)) ;
+                    const ptrdiff_t hdr_sz = ( alignment  + sizeof(void*)  ) & ( ~(alignment-1)) ;
                     const ptrdiff_t msize = (hdr_sz + alignment + (size*sizeof(base_t) )) & (~ (alignment-1));
                     void* ent;
                     void* aligned;
@@ -78,10 +78,10 @@ namespace sys {
             
             template <class base_t,const ptrdiff_t alignment = sizeof(base_t)>
             static inline void heap_delete(void* ent) {
-                    const ptrdiff_t hdr_sz = (alignment  >= sizeof(void*)) ? alignment : ( alignment  + sizeof(void*)  ) & ( ~(alignment-1)) ;
+                    const ptrdiff_t hdr_sz = ( alignment  + sizeof(void*)  ) & ( ~(alignment-1)) ;
                     ptrdiff_t addr;
 
-                    if (ent) {
+                    if (ent != nullptr) {
                             _internal::peek_poke(&addr,(uint8_t*)ent - hdr_sz);
                             basic_aligned_alloc_trace("Delete  p %p\n",addr);
                             delete[] (uint8_t*)addr;
